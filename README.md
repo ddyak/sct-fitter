@@ -1,5 +1,16 @@
 # TreeFitter
 
+#### clone 
+```
+git clone --recursive https://github.com/ddyak/sct-fitter
+```
+
+or after clone
+
+```
+git submodule update --init
+```
+
 #### build
 
 ```
