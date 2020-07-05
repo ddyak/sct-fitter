@@ -1,9 +1,16 @@
 language: cpp
-dist: bionic
-compiler: gcc
+
+matrix:
+    # Ubuntu 16.04 environment
+    - os: linux
+      dist: bionic
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - libeigen3-dev
 
 script: 
-  - sudo apt install libeigen3-dev
   - mkdir build
   - cd build
   - cmake ..
