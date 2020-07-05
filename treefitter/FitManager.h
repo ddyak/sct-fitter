@@ -13,7 +13,7 @@ public:
     FitManager(ParticlePtr particle, const ConstraintConfiguration& config);
     
     /** main fit function */
-    bool fit() { return false; };
+    bool fit();
 
     double chiSquare() const { return m_chiSquare; }
 

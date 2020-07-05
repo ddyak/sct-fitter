@@ -28,3 +28,12 @@ void FitParams::resetCovariance()
     // m_chiSquare = 0;
     // m_nConstraints = 0;
 }
+
+bool FitParams::testCovariance() const
+{
+    for (int row = 0; row < m_dim; ++row) {
+        if (m_globalCovariance(row, row) <= 0) 
+            return false;
+    }
+    return true;
+}

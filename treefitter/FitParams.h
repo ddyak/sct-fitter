@@ -5,10 +5,32 @@ using Eigen::VectorXd;
 
 namespace sct::ana {
 
+/** Class to store and manage fitparams (statevector) */
 class FitParams {
 public:
     /** constructor */
     explicit FitParams(const int dim);
+
+    /** copy constructor */
+    FitParams(const FitParams& rhs)
+      : m_dim(rhs.m_dim),
+        // m_chiSquare(rhs.m_chiSquare),
+        // m_nConstraints(toCopy.m_nConstraints),
+        // m_dimensionReduction(toCopy.m_dimensionReduction),
+        m_globalState(VectorXd(rhs.m_globalState)),
+        m_globalCovariance(MatrixXd(rhs.m_globalCovariance))
+    {}
+
+    /** Assignment operator. */
+    FitParams& operator=(const FitParams& rhs) {
+      m_dim = rhs.m_dim;
+    //   m_chiSquare = rhs.m_chiSquare;
+    //   m_nConstraints = other.m_nConstraints;
+    //   m_dimensionReduction = other.m_dimensionReduction;
+      m_globalState = rhs.m_globalState;
+      m_globalCovariance = rhs.m_globalCovariance;
+      return *this;
+    }
 
     /** getter for the states covariance */
     MatrixXd& getCovariance() { return m_globalCovariance; }
@@ -28,6 +50,9 @@ public:
     /** reset the staevector */
     void resetCovariance();
 
+    /** test if the covariance makes sense */
+    bool testCovariance() const;
+    
 private:
     /** dimension of statevector */
     int m_dim;
