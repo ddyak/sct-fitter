@@ -3,6 +3,7 @@ dist: bionic
 compiler: gcc
 
 script: 
+  - sudo apt install libeigen3-dev
   - mkdir build
   - cd build
   - cmake ..
