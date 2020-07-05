@@ -10,7 +10,7 @@ using namespace sct::ana;
 ParticlePtr generateDecay() {
     ParticlePtr pip = std::make_shared<Particle>(sct::kine::FourVector({ 1, 1, 1, 4 }), 211);
     ParticlePtr pim = std::make_shared<Particle>(sct::kine::FourVector({ 1, 1, 1, 4 }), -211);
-    ParticlePtr mother = std::make_shared<Particle>( { pim, pip }, 310); // ks
+    ParticlePtr mother = std::make_shared<Particle>( std::vector{ pim, pip }, 310); // ks
     return mother;
 }
 
