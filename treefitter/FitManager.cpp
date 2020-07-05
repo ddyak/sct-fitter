@@ -1,17 +1,10 @@
 #include "FitManager.h"
+#include "ConstraintConfiguration.h"
 
+using namespace sct::ana;
 
-
-
-
-int main() {
-    std::cerr << "hi" << std::endl;
-
-    
-    // build decay tree (particles)
-    // initialization   (parameters)
-    // fit              ()
-
-
-    return 0;
+FitManager::FitManager(ParticlePtr particle, const ConstraintConfiguration& config):
+    m_config(config) {
+    // m_decaychain = new DecayChain(particle, config);
+    // m_fitparams = new FitParams(m_decaychain->dim());
 }

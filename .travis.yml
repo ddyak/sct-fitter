@@ -1,0 +1,10 @@
+language: cpp
+dist: bionic
+compiler: gcc
+
+script: 
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make -j
+  - ./runUnitTests

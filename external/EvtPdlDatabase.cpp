@@ -13,7 +13,7 @@ using namespace std;
 
 namespace sct::comm {
 
-string EvtPdlDatabase::evtPdlFile("EvtGen_i/evt.pdl");
+string EvtPdlDatabase::evtPdlFile("../resource/evt.pdl");
 hash<string> hasher;
 optional<const EvtPdlDatabase> EvtPdlDatabase::instance;
 

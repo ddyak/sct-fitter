@@ -86,6 +86,3 @@ target_link_libraries(runUnitTests gtest gtest_main)
 ########################################
 target_link_libraries(runUnitTests Eigen3::Eigen fit_lib)
 
-# This is so you can do 'make test' to see all your tests run, instead of
-# manually running the executable runUnitTests to see those specific tests.
-add_test(UnitTests runUnitTests)
