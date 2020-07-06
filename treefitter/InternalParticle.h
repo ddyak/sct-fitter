@@ -5,8 +5,10 @@
 namespace sct::ana {
 
 class InternalParticle : public ParticleBase {
-    /**  get dimension of constraint */
+public:
+    /** space reserved in fit params, if has mother then it has tau */
     virtual int dim() const { return 4; }
+    
 };
 
 }

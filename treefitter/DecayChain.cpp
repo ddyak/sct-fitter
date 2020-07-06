@@ -8,6 +8,6 @@ DecayChain::DecayChain(ParticlePtr particle, const ConstraintConfiguration& conf
     m_config(config),
     m_dim(0)
 {
-    m_headOfChain = ParticleBase::createParticle(particle, nullptr);
+    m_headOfChain = ParticleBase::createParticle(particle, nullptr, config);
     m_headOfChain->updateIndex(m_dim);
 }

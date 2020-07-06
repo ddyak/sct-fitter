@@ -1,11 +1,14 @@
-#include <iostream>
+#include "gtest/gtest.h"
+
 #include "ThreeVector.h"
 #include "dataobjects/Particle.h"
+#include "treefitter/FitParams.h"
+#include "treefitter/DecayChain.h"
+#include "treefitter/ConstraintConfiguration.h"
+
+#include <iostream>
 
 using namespace sct::ana;
-
-// todo: read from json
-// https://github.com/VitalyVorobyev/decay-gen/tree/Generator
 
 ParticlePtr generateDecay() {
     ParticlePtr pip = std::make_shared<Particle>(sct::kine::FourVector({ 1, 1, 1, 4 }), 211);
@@ -14,8 +17,10 @@ ParticlePtr generateDecay() {
     return mother;
 }
 
-int main() {
+
+TEST(DecayChain, Dummy) {
     auto mother = generateDecay();
-    std::cerr << mother->momentum() << std::endl;
-    return 0;
+    DecayChain decay_chain(mother, {});
+    
+    EXPECT_EQ(decay_chain.dim(), 12);
 }
