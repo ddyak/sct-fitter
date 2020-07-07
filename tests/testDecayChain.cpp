@@ -11,8 +11,8 @@
 using namespace sct::ana;
 
 ParticlePtr generateDecay() {
-    ParticlePtr pip = std::make_shared<Particle>(sct::kine::FourVector({ 1, 1, 1, 4 }), 211);
-    ParticlePtr pim = std::make_shared<Particle>(sct::kine::FourVector({ 1, 1, 1, 4 }), -211);
+    ParticlePtr pip = std::make_shared<Particle>(sct::kine::FourVector({ 1, 2, 3, 4 }), 211);
+    ParticlePtr pim = std::make_shared<Particle>(sct::kine::FourVector({ -1, -2, -3, 4 }), -211);
     ParticlePtr mother = std::make_shared<Particle>(std::vector{ pim, pip }, 310); // ks
     return mother;
 }
@@ -21,6 +21,11 @@ ParticlePtr generateDecay() {
 TEST(DecayChain, Dummy) {
     auto mother = generateDecay();
     DecayChain decay_chain(mother, {});
-    
     EXPECT_EQ(decay_chain.dim(), 12);
+
+    FitParams fitparams(decay_chain.dim());
+    decay_chain.initialize(fitparams);
+    Eigen::VectorXd target_state_vector(12);
+    target_state_vector << -1, -2, -3, 4, 1, 2, 3, 4, 0, 0, 0, 8;
+    EXPECT_EQ(fitparams.getStateVector(), target_state_vector);
 }

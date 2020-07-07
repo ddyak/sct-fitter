@@ -11,3 +11,7 @@ DecayChain::DecayChain(ParticlePtr particle, const ConstraintConfiguration& conf
     m_headOfChain = ParticleBase::createParticle(particle, nullptr, config);
     m_headOfChain->updateIndex(m_dim);
 }
+
+bool DecayChain::initialize(FitParams& par) {
+    return m_headOfChain->initParticle(par);
+}

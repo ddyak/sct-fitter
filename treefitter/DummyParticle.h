@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ParticleBase.h"
+#include "FitParams.h"
 
 namespace sct::ana {
 
@@ -28,6 +29,37 @@ public:
 protected:
     /** init momentum of *this and daughters */
     bool initMomentum(FitParams& fitparams) const { return false; }
+
+    virtual bool initParticle(FitParams& fitparams) override {
+        for (auto daughter : m_daughters) {
+            daughter->initParticle(fitparams);
+        }
+
+        int momindex = momIndex();
+        fitparams.getStateVector().segment(momindex, 4) = Eigen::Matrix<double, 4, 1>::Zero(4);
+
+        // temp
+        if (m_daughters.size() == 0) {
+            fitparams.getStateVector().segment(momindex, 4) = m_particle->fourMomentum();
+            return true;
+        }
+
+        for (auto daughter : m_daughters) {
+            int daumomindex = daughter->momIndex();
+            int maxrow = 4;//daughter->hasEnergy() ? 4 : 3;
+
+            double e2 = fitparams.getStateVector().segment(daumomindex, maxrow).squaredNorm();
+            fitparams.getStateVector().segment(momindex, maxrow) += fitparams.getStateVector().segment(daumomindex, maxrow);
+
+            // if (maxrow == 3) {
+            //     double mass = daughter->pdgMass();
+            //     fitparams.getStateVector()(momindex + 3) += std::sqrt(e2 + mass * mass);
+            // }
+        }
+        
+        return true;
+    }
+
 };
 
 }

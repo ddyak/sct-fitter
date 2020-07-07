@@ -16,7 +16,7 @@ public:
     DecayChain(ParticlePtr particle, const ConstraintConfiguration& config);
 
     /** initalize the chain */
-    bool initialize(FitParams& par) { return false; }
+    bool initialize(FitParams& par);
 
     /** filter down the chain */
     bool filter(FitParams& par) { return false; }

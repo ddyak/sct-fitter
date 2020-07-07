@@ -5,6 +5,7 @@
 namespace sct::ana {
 
 class ConstraintConfiguration;
+class FitParams;
 
 class ParticleBase {
 public:
@@ -38,6 +39,8 @@ public:
         m_daughters.push_back(newDaughter);
         return m_daughters.back();
     }
+
+    virtual bool initParticle(FitParams& fitparams) = 0;
 
 protected:
     /** pointer to framework type  */
