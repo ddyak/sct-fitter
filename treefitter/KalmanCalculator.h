@@ -1,0 +1,96 @@
+/**************************************************************************
+
+ * BASF2 (Belle Analysis Framework 2)                                     *
+ * Copyright(C) 2013 - Belle II Collaboration                             *
+ *                                                                        *
+ * Author: The Belle II Collaboration                                     *
+ * Contributor: Wouter Hulsbergen, Francesco Tenchini, Jo-Frederik Krohn  *
+ *                                                                        *
+ * This software is provided "as is" without any warranty.                *
+ **************************************************************************/
+#pragma once
+
+
+#include "FitParams.h"
+
+// inverse() needs this, in the other classes we get away with just Eigen/Core
+#include <Eigen/Dense>
+
+#define MAX_MATRIX_SIZE 50 
+
+namespace sct::ana {
+
+  /** does the calculation of the gain matrix, updates the cov and fitpars */
+  class KalmanCalculator {
+  public:
+
+    /** constructor  */
+    KalmanCalculator(
+      int sizeRes,
+      int sizeState
+    );
+
+    /** update statevector */
+    void updateState(FitParams& fitparams);
+
+    /** update statevector */
+    void updateState(FitParams& fitparams, FitParams& oldState);
+
+    /** update the statevectors covariance */
+    void updateCovariance(FitParams& fitparams);
+
+    /** get chi2 of this iteration */
+    double getChiSquare() { return m_chisq;}
+
+    /** init the kalman machienery */
+    bool calculateGainMatrix(
+      const Eigen::Matrix < double, -1, 1, 0, 5, 1 > & residuals,
+      const Eigen::Matrix < double, -1, -1, 0, 5, MAX_MATRIX_SIZE > & G,
+      const FitParams& fitparams,
+      const Eigen::Matrix < double, -1, -1, 0, 5, 5 > * V = 0,
+      double weight = 1);
+
+    /**  get chi2 */
+    double chisq() const { return m_chisq ; }
+
+    /** get dimension of the constraint */
+    double getConstraintDim() { return m_constrDim; }
+
+  private:
+    /** dimension of the constraint  */
+    int m_constrDim;
+
+    /**  chi2 */
+    double m_chisq;
+
+    /** we know the max sizes of the matrices
+     *  we assume the tree is smaller than MAX_MATRIX_SIZE parameters
+     *  and the largest constraint is the track constraint with 5
+     *
+     *  -> Eigen puts this on the stack
+     *
+     *  Eigen::Matrix < double, col, row, ColMajor, maxCol, maxRow>
+     *  -1 = Eigen::Dynamic
+     *   0 = Eigen::ColMajor (don't touch)
+     * */
+
+    /** vector holding the residuals */
+    Eigen::Matrix < double, -1, 1, 0, 5, 1 > m_res;
+
+    /** G former H, transforms covraince of {residuals}<->{x,p,E} */
+    Eigen::Matrix < double, -1, -1, 0, 5, MAX_MATRIX_SIZE > m_G;
+
+    /** R residual covariance */
+    Eigen::Matrix < double, -1, -1, 0, 5, 5 > m_R;
+
+    /** R inverse */
+    Eigen::Matrix < double, -1, -1, 0, 5, 5 > m_Rinverse;
+
+    /** K kalman gain matrix */
+    Eigen::Matrix < double, -1, -1, 0, MAX_MATRIX_SIZE, 5 > m_K;
+
+    /** C times G^t  */
+    Eigen::Matrix < double, -1, -1, 0, MAX_MATRIX_SIZE, 5 > m_CGt;
+
+  };
+}

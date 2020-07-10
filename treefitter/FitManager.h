@@ -22,6 +22,7 @@ private:
     ParticlePtr m_particle;
 
     const ConstraintConfiguration& m_config;
+    bool m_useReferencing;
 
     double m_chiSquare;
 

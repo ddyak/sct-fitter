@@ -6,8 +6,6 @@
 #include "treefitter/DecayChain.h"
 #include "treefitter/ConstraintConfiguration.h"
 
-#include <iostream>
-
 using namespace sct::ana;
 
 ParticlePtr generateDecay() {
@@ -17,8 +15,7 @@ ParticlePtr generateDecay() {
     return mother;
 }
 
-
-TEST(DecayChain, Dummy) {
+TEST(DecayChain, Initialize) {
     auto mother = generateDecay();
     DecayChain decay_chain(mother, {});
     EXPECT_EQ(decay_chain.dim(), 12);
@@ -28,4 +25,8 @@ TEST(DecayChain, Dummy) {
     Eigen::VectorXd target_state_vector(12);
     target_state_vector << -1, -2, -3, 4, 1, 2, 3, 4, 0, 0, 0, 8;
     EXPECT_EQ(fitparams.getStateVector(), target_state_vector);
+    EXPECT_EQ(fitparams.getCovariance().rows(), 12);
+    EXPECT_EQ(fitparams.testCovariance(), true);
+
+    decay_chain.filter(fitparams);
 }

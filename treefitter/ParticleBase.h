@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dataobjects/Particle.h"
+#include "Constraint.h"
 
 namespace sct::ana {
 
@@ -33,14 +34,33 @@ public:
     /** get momentum index */
     virtual int momIndex() const { return -1; }
 
-    /** add daughter  */
-    ParticleBase* addDaughter(ParticlePtr particle, const ConstraintConfiguration& config) {
-        auto newDaughter = ParticleBase::createParticle(particle, this, config);
-        m_daughters.push_back(newDaughter);
-        return m_daughters.back();
-    }
+    // does the particle have a 3-momentum or a 4-momentum ?
+    /** get momentum dimension */
+    virtual bool hasEnergy() const = 0;
 
+    /** get false  */
+    virtual bool hasPosition() const = 0;
+
+    /** get pdg mass  */
+    double pdgMass() const { return m_pdgMass ; }
+
+    /** add daughter  */
+    ParticleBase* addDaughter(ParticlePtr particle, const ConstraintConfiguration& config);
+
+    /** initialize particle params */
     virtual bool initParticle(FitParams& fitparams) = 0;
+
+    /** init covariance matrix */
+    virtual bool initCovariance(FitParams&) const;
+
+    /** add to constraint list */
+    virtual void addToConstraintList(std::vector<Constraint>& alist, int depth) const = 0;
+
+    /** project constraint */
+    virtual bool projectConstraint(Constraint::Type, const FitParams&, Projection&) const = 0;
+
+    /** project mass constraint using the particles parameters */
+    bool projectMassConstraintParticle(const FitParams&, Projection&) const;
 
 protected:
     /** pointer to framework type  */
@@ -58,6 +78,9 @@ protected:
 private:
     /** index */
     int m_index;
+
+    /** pdg mass  */
+    const double m_pdgMass;
 };
 
 }

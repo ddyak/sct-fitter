@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Eigen/Core>
 
 using Eigen::MatrixXd;
@@ -52,10 +54,31 @@ public:
 
     /** test if the covariance makes sense */
     bool testCovariance() const;
+
+    /** get the states dimension */
+    int getDimensionOfState() const { return m_dim; }
+
+    /** increment global chi2 */
+    void addChiSquare(double chisq, int nconstraints) {
+        m_chiSquare += chisq;
+        m_nConstraints += nconstraints;
+    }
+
+    /** reset chi2 */
+    void resetChiSquare() {
+        m_chiSquare = 0;
+        m_nConstraints = 0;
+    }
     
 private:
     /** dimension of statevector */
     int m_dim;
+
+    /** chi2 */
+    double m_chiSquare;
+
+    /** number of conatraints */
+    int m_nConstraints;
     
     /** vector holding all parameters of this fit */
     Eigen::VectorXd m_globalState;

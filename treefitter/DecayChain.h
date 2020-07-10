@@ -1,5 +1,7 @@
 #pragma once
+
 #include "dataobjects/Particle.h"
+#include "Constraint.h"
 
 namespace sct::ana {
 
@@ -19,20 +21,29 @@ public:
     bool initialize(FitParams& par);
 
     /** filter down the chain */
-    bool filter(FitParams& par) { return false; }
+    bool filter(FitParams& par);
 
-    /** get dimension   */
-    int dim() const { return m_dim;}
+    /** filter with respect to a previous iteration for better stability */
+    bool filterWithReference(FitParams& par, const FitParams& ref) { return false; }
+
+    /** get dimension */
+    int dim() const { return m_dim; }
+
+    /** init contraintlist */
+    void initConstraintList();
 
 private:
     /** the dimension of constraint */
     mutable int m_dim; 
-
-    /** config container */
-    const ConstraintConfiguration& m_config;
     
     /** head of decay tree*/
     ParticleBase* m_headOfChain;
+
+    /** list of constraints */
+    std::vector<Constraint> m_constraintlist;
+    
+    /** config container */
+    const ConstraintConfiguration& m_config;
 };
 
 }
