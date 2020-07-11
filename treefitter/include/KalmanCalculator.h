@@ -12,6 +12,7 @@
 
 
 #include "FitParams.h"
+#include "ErrCode.h"
 
 // inverse() needs this, in the other classes we get away with just Eigen/Core
 #include <Eigen/Dense>
@@ -43,7 +44,7 @@ namespace sct::ana {
     double getChiSquare() { return m_chisq;}
 
     /** init the kalman machienery */
-    bool calculateGainMatrix(
+    ErrCode calculateGainMatrix(
       const Eigen::Matrix < double, -1, 1, 0, 5, 1 > & residuals,
       const Eigen::Matrix < double, -1, -1, 0, 5, MAX_MATRIX_SIZE > & G,
       const FitParams& fitparams,

@@ -2,6 +2,7 @@
 
 #include "dataobjects/Particle.h"
 #include "Constraint.h"
+#include "ErrCode.h"
 
 namespace sct::ana {
 
@@ -48,19 +49,19 @@ public:
     ParticleBase* addDaughter(ParticlePtr particle, const ConstraintConfiguration& config);
 
     /** initialize particle params */
-    virtual bool initParticle(FitParams& fitparams) = 0;
+    virtual ErrCode initParticle(FitParams& fitparams) = 0;
 
     /** init covariance matrix */
-    virtual bool initCovariance(FitParams&) const;
+    virtual ErrCode initCovariance(FitParams&) const;
 
     /** add to constraint list */
     virtual void addToConstraintList(std::vector<Constraint>& alist, int depth) const = 0;
 
     /** project constraint */
-    virtual bool projectConstraint(Constraint::Type, const FitParams&, Projection&) const = 0;
+    virtual ErrCode projectConstraint(Constraint::Type, const FitParams&, Projection&) const = 0;
 
     /** project mass constraint using the particles parameters */
-    bool projectMassConstraintParticle(const FitParams&, Projection&) const;
+    ErrCode projectMassConstraintParticle(const FitParams&, Projection&) const;
 
 protected:
     /** pointer to framework type  */

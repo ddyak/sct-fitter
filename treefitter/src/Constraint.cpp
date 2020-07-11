@@ -23,18 +23,18 @@ namespace sct::ana {
            (m_depth == rhs.m_depth && m_type < rhs.m_type);
   }
 
-  bool Constraint::project(const FitParams& fitpar, Projection& p) const
+  ErrCode Constraint::project(const FitParams& fitpar, Projection& p) const
   {
     return m_node->projectConstraint(m_type, fitpar, p);
   }
 
-  bool Constraint::filter(FitParams& fitpar)
+  ErrCode Constraint::filter(FitParams& fitpar)
   {
     /**
      * We don't have reference state yet so we use the k-1 last state
      * to linearize non-linear constraints
      * */
-    bool status = false;
+    ErrCode status;
     Projection p(fitpar.getDimensionOfState(), m_dim);
     KalmanCalculator kalman(m_dim, fitpar.getDimensionOfState());
 
@@ -44,12 +44,12 @@ namespace sct::ana {
 
     double accumulated_chi2 = 0;
     //while (!finished && status) {//!status.failure()) {
-    for (int i = 0; i < 1; ++i) { // temp
+    while (!finished && !status.failure()) {
+
       p.resetProjection();
       status |= project(fitpar, p);
-      status = 0; // temp
-      if (!status) {
-        status = 0; // temp
+
+      if (!status.failure()) {
 
         status |= kalman.calculateGainMatrix(
                     p.getResiduals(),
@@ -59,7 +59,7 @@ namespace sct::ana {
                     1
                   );
 
-        if (!status) {
+        if (!status.failure()) {
           kalman.updateState(fitpar);
 
           // r R^-1 r
@@ -81,10 +81,10 @@ namespace sct::ana {
     fitpar.addChiSquare(accumulated_chi2, number_of_constraints);
 
     kalman.updateCovariance(fitpar);
-    return true;
+    return status;
   }
 
-  bool Constraint::filterWithReference(FitParams& fitpar, const FitParams& oldState)
+  ErrCode Constraint::filterWithReference(FitParams& fitpar, const FitParams& oldState)
   {
     /**
      * We now linearise around the last iteration \alpha (const FitParams& oldState)
@@ -92,7 +92,7 @@ namespace sct::ana {
      * but we ensured by the linearisation around the last state that the step size is small enough
      * so we just use them as if they were linear
      * */
-    bool status;
+    ErrCode status;
     Projection p(fitpar.getDimensionOfState(), m_dim);
     KalmanCalculator kalman(m_dim, fitpar.getDimensionOfState());
 
@@ -104,7 +104,7 @@ namespace sct::ana {
      * Downside: non-linear constraints cant be filtered multiple times anymore.
      * */
     p.getResiduals() += p.getH() * (fitpar.getStateVector() - oldState.getStateVector());
-    if (!status) {
+    if (!status.failure()) {
       status |= kalman.calculateGainMatrix(
                   p.getResiduals(),
                   p.getH(),
@@ -113,7 +113,7 @@ namespace sct::ana {
                   1
                 );
 
-      if (!status) {
+      if (!status.failure()) {
         kalman.updateState(fitpar);
       }
     }

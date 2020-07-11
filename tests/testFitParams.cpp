@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "treefitter/FitParams.h"
+#include "treefitter/include/FitParams.h"
 
 using namespace sct::ana;
 

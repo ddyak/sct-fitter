@@ -2,9 +2,9 @@
 
 
 #include "ConstraintConfiguration.h"
-#include "InternalParticle.h"
 #include "DummyParticle.h"
 #include "Projection.h"
+#include "FitParams.h"
 
 
 using namespace sct::ana;
@@ -15,7 +15,7 @@ ParticleBase::ParticleBase(ParticlePtr particle, const ParticleBase* mother, con
     m_mother(mother),
     m_config(config),
     m_index(0),
-    m_pdgMass(particle->mass())
+    m_pdgMass(particle->pdgMass())
 {}
 
 /* static */ ParticleBase* ParticleBase::createParticle(ParticlePtr particle, const ParticleBase* mother, const ConstraintConfiguration& config)
@@ -37,13 +37,13 @@ ParticleBase* ParticleBase::addDaughter(ParticlePtr particle, const ConstraintCo
     return m_daughters.back();
 }
 
-bool ParticleBase::initCovariance(FitParams& fitparams) const
+ErrCode ParticleBase::initCovariance(FitParams& fitparams) const
 {
     //this is very sensitive and can heavily affect the efficiency of the fit
     const int posindex = posIndex();
     if (posindex >= 0) {
         for (int i = 0; i < 3; ++i) {
-        fitparams.getCovariance()(posindex + i, posindex + i) = 1;
+            fitparams.getCovariance()(posindex + i, posindex + i) = 1;
         }
     }
 
@@ -60,10 +60,10 @@ bool ParticleBase::initCovariance(FitParams& fitparams) const
         fitparams.getCovariance()(tauindex, tauindex) = 1.;
     }
 
-    return true;
+    return ErrCode(ErrCode::Status::success);
 }
 
-bool ParticleBase::projectMassConstraintParticle(const FitParams& fitparams, Projection& p) const {
+ErrCode ParticleBase::projectMassConstraintParticle(const FitParams& fitparams, Projection& p) const {
     const double mass = pdgMass();
     const double mass2 = mass * mass;
     const int momindex = momIndex();
@@ -88,5 +88,5 @@ bool ParticleBase::projectMassConstraintParticle(const FitParams& fitparams, Pro
     // f' = sigma_x^2 * (df/dx)^2
     // p.getV()(0) = width * width * 4 * mass2;
 
-    return true;
+    return ErrCode(ErrCode::Status::success);
 }

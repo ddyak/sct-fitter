@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "treefitter/Projection.h"
+#include "treefitter/include/Projection.h"
 
 
 using namespace sct::ana;

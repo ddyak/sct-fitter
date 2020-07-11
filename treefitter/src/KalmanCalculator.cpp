@@ -29,7 +29,7 @@ namespace sct::ana {
   }
 
 
-  bool KalmanCalculator::calculateGainMatrix(
+  ErrCode KalmanCalculator::calculateGainMatrix(
     const Eigen::Matrix < double, -1, 1, 0, 5, 1 > & residuals,
     const Eigen::Matrix < double, -1, -1, 0, 5, MAX_MATRIX_SIZE > & G,
     const FitParams& fitparams,
@@ -57,10 +57,10 @@ namespace sct::ana {
     Eigen::Matrix < double, -1, -1, 0, 5, 5 > RInvtemp;
     RInvtemp = m_R.selfadjointView<Eigen::Lower>();
     m_Rinverse = RInvtemp.inverse();
-    if (!m_Rinverse.allFinite()) { return false; } //ErrCode(ErrCode::Status::inversionerror); }
+    if (!m_Rinverse.allFinite()) { return ErrCode(ErrCode::Status::inversionerror); }
 
     m_K = m_CGt * m_Rinverse.selfadjointView<Eigen::Lower>();
-    return true;
+    return ErrCode(ErrCode::Status::success);
   }
 
   void KalmanCalculator::updateState(FitParams& fitparams)

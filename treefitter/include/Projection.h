@@ -42,7 +42,7 @@ namespace sct::ana {
     double getElementInResiduals(int row) { return m_residual(m_offset + row, 1); }
 
     /** get residuals cov matrix */
-    Eigen::Matrix < double, -1, -1, 0, 5, 5 > & getV() {return m_V;}
+    Eigen::Matrix < double, -1, -1, 0, 5, 5 > & getV() { return m_V; }
 
     /** get residuals cov matrix */
     const Eigen::Matrix < double, -1, -1, 0, 5, 5 > & getV() const {return m_V;}

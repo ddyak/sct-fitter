@@ -21,6 +21,8 @@ bool FitManager::fit() {
     // 3. update tree if necessary
     m_decaychain->initialize(*m_fitparams);
 
+    std::cerr << m_fitparams->getStateVector() << std::endl;
+
     std::size_t nitermax = 5;
     for (auto m_niter = 0; m_niter < nitermax; ++m_niter) {
         if (0 == m_niter) {
@@ -30,10 +32,12 @@ bool FitManager::fit() {
           m_decaychain->filterWithReference(*m_fitparams, *tempState);
           delete tempState;
         }
-      }
+    }
 
     if (!(m_fitparams->testCovariance()))
         std::cerr << "bad covariance" << std::endl;
+    
+    std::cerr << m_fitparams->getStateVector() << std::endl;
 
     return false;
 }

@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "treefitter/KalmanCalculator.h"
+#include "treefitter/include/KalmanCalculator.h"
 
 
 using namespace sct::ana;

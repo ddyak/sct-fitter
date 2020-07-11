@@ -10,6 +10,7 @@
 #pragma once
 
 #include <string>
+#include "ErrCode.h"
 
 namespace sct::ana {
   class ParticleBase;
@@ -33,6 +34,7 @@ namespace sct::ana {
                 // composite,
                 // track,
                 // photon,
+                dummyparticle, // ddyak: temp particle
                 // klong,
                 // conversion,
                 kinematic,
@@ -48,10 +50,7 @@ namespace sct::ana {
     bool operator<(const Constraint& rhs) const;
 
     /** operator */
-    bool operator==(const Constraint& rhs) const
-    {
-      return m_type == rhs.m_type;
-    }
+    bool operator==(const Constraint& rhs) const { return m_type == rhs.m_type; }
 
     /**  get type of constraint */
     Type type() const { return m_type; }
@@ -91,13 +90,13 @@ namespace sct::ana {
     virtual ~Constraint() {}
 
     /** call the constraints projection function */
-    virtual bool project(const FitParams& fitpar, Projection& p) const;
+    virtual ErrCode project(const FitParams& fitpar, Projection& p) const;
 
     /** filter this constraint */
-    virtual bool filter(FitParams& fitpar);
+    virtual ErrCode filter(FitParams& fitpar);
 
     /** filter this constraint */
-    virtual bool filterWithReference(FitParams& fitpar, const FitParams& oldState);
+    virtual ErrCode filterWithReference(FitParams& fitpar, const FitParams& oldState);
 
     /** get name of constraint  */
     std::string name() const;

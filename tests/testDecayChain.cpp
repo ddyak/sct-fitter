@@ -2,9 +2,9 @@
 
 #include "ThreeVector.h"
 #include "dataobjects/Particle.h"
-#include "treefitter/FitParams.h"
-#include "treefitter/DecayChain.h"
-#include "treefitter/ConstraintConfiguration.h"
+#include "treefitter/include/FitParams.h"
+#include "treefitter/include/DecayChain.h"
+#include "treefitter/include/ConstraintConfiguration.h"
 
 using namespace sct::ana;
 

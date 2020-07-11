@@ -19,7 +19,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3")
 find_package(Eigen3 REQUIRED)
 
 include_directories(
-    ./treefitter/
+    ./treefitter/include/
     ./external/
     ./dataobjects/
     ./
@@ -30,7 +30,7 @@ include_directories(
 ###############################
 
 file(GLOB SOURCES 
-    treefitter/*.cpp 
+    treefitter/src/*.cpp 
     dataobjects/*.cpp
     external/*.cpp
 )

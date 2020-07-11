@@ -2,6 +2,9 @@
 #include "ThreeVector.h"
 #include "dataobjects/Particle.h"
 
+#include "ConstraintConfiguration.h"
+#include "FitManager.h"
+
 using namespace sct::ana;
 
 // todo: read from json
@@ -15,7 +18,13 @@ ParticlePtr generateDecay() {
 }
 
 int main() {
-    auto mother = generateDecay();
-    std::cerr << mother->momentum() << std::endl;
+    //auto mother = generateDecay();
+    auto fv = sct::kine::FourVector({ 0.2, 0.15, 0.1, 0.3 });
+    auto mother = std::make_shared<Particle>(fv, 211);
+    std::cerr << mother->mass() << std::endl;
+    std::cerr << mother->pdgMass() << std::endl;
+    
+    FitManager fitmanager(mother, {});
+    fitmanager.fit();
     return 0;
 }

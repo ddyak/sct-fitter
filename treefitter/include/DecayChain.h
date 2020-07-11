@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dataobjects/Particle.h"
+#include "ErrCode.h"
 #include "Constraint.h"
 
 namespace sct::ana {
@@ -18,13 +19,13 @@ public:
     DecayChain(ParticlePtr particle, const ConstraintConfiguration& config);
 
     /** initalize the chain */
-    bool initialize(FitParams& par);
+    ErrCode initialize(FitParams& par);
 
     /** filter down the chain */
-    bool filter(FitParams& par);
+    ErrCode filter(FitParams& par);
 
     /** filter with respect to a previous iteration for better stability */
-    bool filterWithReference(FitParams& par, const FitParams& ref) { return false; }
+    ErrCode filterWithReference(FitParams& par, const FitParams& ref);
 
     /** get dimension */
     int dim() const { return m_dim; }
