@@ -13,14 +13,14 @@ public:
     DummyParticle(ParticlePtr particle, const ParticleBase* mother, const ConstraintConfiguration& config);
 
     /**  get dimension of constraint */
-    virtual int dim() const override { return 4; }
+    virtual int dim() const override { return hasEnergy() ? 4 : 3; }
 
     /** get momentum index */
     virtual int momIndex() const { return index(); }
 
     // does the particle have a 3-momentum or a 4-momentum ?
     /** get momentum dimension */
-    virtual bool hasEnergy() const { return true; }
+    virtual bool hasEnergy() const { return is_final ? false : true; }
 
     /** get false  */
     virtual bool hasPosition() const { return false; }
@@ -51,11 +51,14 @@ protected:
 private:
     bool m_massconstraint = true;
 
-    /** only lower triangle filled! */
-    Eigen::Matrix<double, 4, 4> m_covariance;
+    /** for final particles */
+    bool is_final = false;
 
     /** only lower triangle filled! */
-    Eigen::Matrix<double, 1, 4> m_momentum;
+    Eigen::Matrix<double, 3, 3> m_covariance;
+
+    /** only lower triangle filled! */
+    Eigen::Matrix<double, 1, 3> m_momentum;
 };
 
 

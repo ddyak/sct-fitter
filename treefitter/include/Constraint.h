@@ -34,7 +34,7 @@ namespace sct::ana {
                 // composite,
                 // track,
                 // photon,
-                dummyparticle, // ddyak: temp particle
+                measurment, // ddyak: temporary for dummy particle
                 // klong,
                 // conversion,
                 kinematic,

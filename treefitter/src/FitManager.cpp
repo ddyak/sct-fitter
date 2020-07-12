@@ -6,6 +6,7 @@
 
 using namespace sct::ana;
 
+
 FitManager::FitManager(ParticlePtr particle, const ConstraintConfiguration& config):
     m_particle(particle),
     m_config(config),
@@ -21,7 +22,7 @@ bool FitManager::fit() {
     // 3. update tree if necessary
     m_decaychain->initialize(*m_fitparams);
 
-    std::cerr << m_fitparams->getStateVector() << std::endl;
+    std::cerr << m_fitparams->getStateVector().transpose() << std::endl;
 
     std::size_t nitermax = 5;
     for (auto m_niter = 0; m_niter < nitermax; ++m_niter) {
@@ -37,7 +38,7 @@ bool FitManager::fit() {
     if (!(m_fitparams->testCovariance()))
         std::cerr << "bad covariance" << std::endl;
     
-    std::cerr << m_fitparams->getStateVector() << std::endl;
+    std::cerr << m_fitparams->getStateVector().transpose() << std::endl;
 
     return false;
 }

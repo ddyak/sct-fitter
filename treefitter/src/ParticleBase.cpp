@@ -1,11 +1,9 @@
 #include "ParticleBase.h"
 
-
 #include "ConstraintConfiguration.h"
 #include "DummyParticle.h"
 #include "Projection.h"
 #include "FitParams.h"
-
 
 using namespace sct::ana;
 
