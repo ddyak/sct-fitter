@@ -3,6 +3,7 @@
 #include "dataobjects/Particle.h"
 #include "ErrCode.h"
 #include "Constraint.h"
+#include <map>
 
 namespace sct::ana {
 
@@ -27,6 +28,9 @@ public:
     /** filter with respect to a previous iteration for better stability */
     ErrCode filterWithReference(FitParams& par, const FitParams& ref);
 
+    /** convert Belle2::particle into particle base(fitter base particle) */
+    const ParticleBase* locate(ParticlePtr bc) const;
+
     /** get dimension */
     int dim() const { return m_dim; }
 
@@ -45,6 +49,9 @@ private:
     
     /** config container */
     const ConstraintConfiguration& m_config;
+
+    /** the map from Belle2::Particles to TreeFitter::ParticleBase */
+    std::map<ParticlePtr, const ParticleBase*> m_particleMap;
 };
 
 }

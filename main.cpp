@@ -24,5 +24,6 @@ int main() {
     
     FitManager fitmanager(mother, {});
     fitmanager.fit();
+    std::cerr << mother->daughter(1)->momentum() << std::endl;
     return 0;
 }

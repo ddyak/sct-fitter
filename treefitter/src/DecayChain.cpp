@@ -53,3 +53,21 @@ ErrCode DecayChain::filterWithReference(FitParams& par, const FitParams& ref) {
     }
     return status;
 }
+
+const ParticleBase* DecayChain::locate(ParticlePtr particle) const {
+    const ParticleBase* rc(nullptr);
+    const auto mapRow = m_particleMap.find(particle);
+
+    if (mapRow == m_particleMap.end()) {
+        //  take head of chain and recursively find particle in it
+        rc = m_headOfChain->locate(particle);
+
+        if (rc && rc->particle()) {
+            const_cast<DecayChain*>(this)->m_particleMap[rc->particle()] = rc;
+        }
+    } else {
+        //only used for "head of tree"
+        rc = mapRow->second;// (B2::Particle, Particlebase)
+    }
+    return rc;
+}

@@ -45,6 +45,15 @@ public:
     /** get pdg mass  */
     double pdgMass() const { return m_pdgMass ; }
 
+    /** get sct particle  */
+    ParticlePtr particle() const { return m_particle; }
+
+    /** getMother() / hasMother() */
+    const ParticleBase* mother() const;
+
+    /**  get particle base from sct particle */
+    const ParticleBase* locate(ParticlePtr particle) const ;
+
     /** add daughter  */
     ParticleBase* addDaughter(ParticlePtr particle, const ConstraintConfiguration& config);
 

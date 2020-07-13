@@ -88,3 +88,22 @@ ErrCode ParticleBase::projectMassConstraintParticle(const FitParams& fitparams, 
 
     return ErrCode(ErrCode::Status::success);
 }
+
+const ParticleBase* ParticleBase::mother() const {
+    const ParticleBase* rc = m_mother;
+    // while (rc && rc->type() == kFeedthroughParticle) {
+        // rc = rc->mother();
+    // }
+    return rc;
+}
+
+const ParticleBase* ParticleBase::locate(ParticlePtr particle) const {
+    const ParticleBase* rc = (m_particle == particle) ? this : nullptr;
+    if (!rc) {
+        for (auto* daughter : m_daughters) {
+            rc = daughter->locate(particle);
+            if (rc) {break;}
+        }
+    }
+    return rc;
+}
