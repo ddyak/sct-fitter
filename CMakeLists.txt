@@ -10,7 +10,7 @@ project(${PROJECT_NAME})
 # Compiler flags
 ################################
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -O3")
 
 ###############################
 # Include directories
@@ -22,6 +22,7 @@ include_directories(
     ./treefitter/include/
     ./external/
     ./dataobjects/
+    ./wrapper/
     ./
 )
 
@@ -33,6 +34,7 @@ file(GLOB SOURCES
     treefitter/src/*.cpp 
     dataobjects/*.cpp
     external/*.cpp
+    wrapper/*.cpp
 )
 
 ########################################
@@ -43,7 +45,7 @@ list(REMOVE_ITEM SOURCES main.cpp)
 ########################################
 # Compile source files into a library
 ########################################
-add_library(fit_lib ${SOURCES})
+add_library(fit_lib SHARED ${SOURCES})
 target_link_libraries(fit_lib Eigen3::Eigen)
 
 
@@ -85,4 +87,3 @@ target_link_libraries(runUnitTests gtest gtest_main)
 # Extra linking for the project.
 ########################################
 target_link_libraries(runUnitTests Eigen3::Eigen fit_lib)
-
