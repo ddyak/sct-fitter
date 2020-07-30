@@ -69,6 +69,11 @@ public:
         m_chiSquare = 0;
         m_nConstraints = 0;
     }
+
+    /** get chi2 */
+    double getChiSquare() {
+        return m_chiSquare;
+    }
     
 private:
     /** dimension of statevector */

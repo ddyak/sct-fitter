@@ -5,20 +5,25 @@
 #include "dataobjects/Particle.h"
 #include "PODs/Particle.h"
 
-std::map<Particle*, sct::ana::ParticlePtr> pod2particle;
-std::map<sct::ana::ParticlePtr, Particle*> particle2pod;
+#include "treefitter/include/ConstraintConfiguration.h"
+#include "treefitter/include/FitManager.h"
 
-sct::ana::ParticlePtr createParticle(Particle* part) {
-    part->pdg = 7; // temp for testing
-    if (part->daughters_size) {
+
+sct::ana::ParticlePtr createParticle(Particle* part, std::map<sct::ana::ParticlePtr, Particle*>& particle2pod) {
+    if (part->daughters_size > 0) {
         std::vector<sct::ana::ParticlePtr> daughters;
         for (int i = 0; i < part->daughters_size; ++i) {
-            daughters.push_back(createParticle(part->daughters[i]));
+            auto daughter = createParticle(part->daughters[i], particle2pod);
+            daughters.push_back(daughter);
         }
-        return std::make_shared<sct::ana::Particle>(daughters, part->pdg);
+        auto particle = std::make_shared<sct::ana::Particle>(daughters, part->pdg);
+       particle2pod[particle] = part; // for pod
+        return particle;
     } else {
         auto momentum = sct::kine::ThreeVector<double>{part->momentum[0], part->momentum[1], part->momentum[2]};
-        return std::make_shared<sct::ana::Particle>(momentum, 0.139, part->pdg);
+        auto particle = std::make_shared<sct::ana::Particle>(momentum, 0.139, part->pdg);
+       particle2pod[particle] = part; // for pod
+        return particle;
     }
 }
 
@@ -32,9 +37,17 @@ Particle* Particle_from_momentum(int pdg, double momentum[3]) {
     return new Particle(pdg, momentum); 
 }
 
-void fit(Particle* part) {
-    createParticle(part);
-    part->pdg = 7;
+double fit(Particle* part) {
+    std::map<sct::ana::ParticlePtr, Particle*> particle2pod;
+    sct::ana::ParticlePtr particle = createParticle(part, particle2pod);
+    sct::ana::FitManager fitmanager(particle, {});
+    fitmanager.fit();
+    for (auto& [particle, pod]: particle2pod) {
+        pod->momentum[0] = particle->momentum()[0];
+        pod->momentum[1] = particle->momentum()[1];
+        pod->momentum[2] = particle->momentum()[2];
+    }
+    return fitmanager.chiSquare();
 }
 
 }

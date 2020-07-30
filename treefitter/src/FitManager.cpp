@@ -23,7 +23,7 @@ bool FitManager::fit() {
     // 3. update tree if necessary
     m_decaychain->initialize(*m_fitparams);
 
-    std::cerr << m_fitparams->getStateVector().transpose() << std::endl;
+    // std::cerr << m_fitparams->getStateVector().transpose() << std::endl;
 
     std::size_t nitermax = 5;
     for (auto m_niter = 0; m_niter < nitermax; ++m_niter) {
@@ -39,9 +39,9 @@ bool FitManager::fit() {
     if (!(m_fitparams->testCovariance()))
         std::cerr << "bad covariance" << std::endl;
 
-    std::cerr << m_fitparams->getStateVector().transpose() << std::endl;
-
+    // std::cerr << m_fitparams->getStateVector().transpose() << std::endl;
     updateTree(m_particle, true);
+    m_chiSquare = m_fitparams->getChiSquare();
 
     return false;
 }
