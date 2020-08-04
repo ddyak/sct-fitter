@@ -73,7 +73,7 @@ ErrCode Constraint::filter(FitParams& fitpar)
         finished  = ++iter >= m_maxNIter || diverging || converged;
         chisq = newchisq;
         accumulated_chi2 += newchisq;
-      }
+      } 
     }
   }
 
@@ -139,7 +139,7 @@ std::string Constraint::name() const
   //   case photon:       rc = "photon";     break;
   //   case klong:        rc = "klong";     break;
     case kinematic:    rc = "kinematic";  break;
-  //   case geometric:    rc = "geometric";  break;
+    case geometric:    rc = "geometric";  break;
     case mass:         rc = "mass";       break;
   //   case massEnergy:   rc = "massEnergy"; break;
   //   case lifetime:     rc = "lifetime";   break;

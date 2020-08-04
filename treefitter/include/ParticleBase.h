@@ -72,6 +72,9 @@ public:
     /** project mass constraint using the particles parameters */
     ErrCode projectMassConstraintParticle(const FitParams&, Projection&) const;
 
+    /** project geometrical constraint */
+    ErrCode projectGeoConstraint(const FitParams& fitparams, Projection& p) const;
+
 protected:
     /** pointer to framework type  */
     ParticlePtr m_particle;

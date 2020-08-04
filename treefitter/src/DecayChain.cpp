@@ -7,8 +7,8 @@ using namespace sct::ana;
 
 
 DecayChain::DecayChain(ParticlePtr particle, const ConstraintConfiguration& config):
-    m_config(config),
-    m_dim(0)
+    m_dim(0),
+    m_config(config)
 {
     m_headOfChain = ParticleBase::createParticle(particle, nullptr, config);
     m_headOfChain->updateIndex(m_dim);
@@ -37,8 +37,7 @@ ErrCode DecayChain::filter(FitParams& par) {
     status |= m_headOfChain->initCovariance(par);
     par.resetChiSquare();
     for (auto constraint : m_constraintlist) {
-        std::cerr << constraint.name() << std::endl;
-      status |= constraint.filter(par);
+        status |= constraint.filter(par);
     }
     return status;
 }

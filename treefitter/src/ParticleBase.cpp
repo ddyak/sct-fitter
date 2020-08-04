@@ -2,6 +2,7 @@
 
 #include "ConstraintConfiguration.h"
 #include "DummyParticle.h"
+#include "InternalParticle.h"
 #include "Projection.h"
 #include "FitParams.h"
 
@@ -18,7 +19,10 @@ ParticleBase::ParticleBase(ParticlePtr particle, const ParticleBase* mother, con
 
 /* static */ ParticleBase* ParticleBase::createParticle(ParticlePtr particle, const ParticleBase* mother, const ConstraintConfiguration& config)
 {
-    return new DummyParticle(particle, mother, config);
+    if (particle->daughters().empty())
+        return new DummyParticle(particle, mother, config);
+    else
+        return new InternalParticle(particle, mother, config);
 }
 
 void ParticleBase::updateIndex(int& offset) {
@@ -106,4 +110,68 @@ const ParticleBase* ParticleBase::locate(ParticlePtr particle) const {
         }
     }
     return rc;
+}
+
+ErrCode ParticleBase::projectGeoConstraint(const FitParams& fitparams, Projection& p) const
+{
+    //assert(m_config);
+    // only allow 2d for head of tree particles that are beam constrained
+    const int dim = 3;// m_config->m_originDimension == 2 && std::abs(m_particle->getPDGCode()) == m_config->m_headOfTreePDG ? 2 : 3;
+    const int posindexmother = mother()->posIndex();
+    const int posindex = posIndex();
+    const int tauindex = tauIndex();
+    const int momindex = momIndex();
+
+    const double tau = fitparams.getStateVector()(tauindex);
+    Eigen::Matrix < double, 1, -1, 1, 1, 3 > x_vec = fitparams.getStateVector().segment(posindex, dim);
+    Eigen::Matrix < double, 1, -1, 1, 1, 3 > x_m = fitparams.getStateVector().segment(posindexmother, dim);
+    Eigen::Matrix < double, 1, -1, 1, 1, 3 > p_vec = fitparams.getStateVector().segment(momindex, dim);
+    const double mom = p_vec.norm();
+    const double mom3 = mom * mom * mom;
+
+    if (3 == dim) {
+        // we can already set these
+        //diagonal momentum
+        p.getH()(0, momindex)     = tau * (p_vec(1) * p_vec(1) + p_vec(2) * p_vec(2)) / mom3 ;
+        p.getH()(1, momindex + 1) = tau * (p_vec(0) * p_vec(0) + p_vec(2) * p_vec(2)) / mom3 ;
+        p.getH()(2, momindex + 2) = tau * (p_vec(0) * p_vec(0) + p_vec(1) * p_vec(1)) / mom3 ;
+
+        //offdiagonal momentum
+        p.getH()(0, momindex + 1) = - tau * p_vec(0) * p_vec(1) / mom3 ;
+        p.getH()(0, momindex + 2) = - tau * p_vec(0) * p_vec(2) / mom3 ;
+
+        p.getH()(1, momindex + 0) = - tau * p_vec(1) * p_vec(0) / mom3 ;
+        p.getH()(1, momindex + 2) = - tau * p_vec(1) * p_vec(2) / mom3 ;
+
+        p.getH()(2, momindex + 0) = - tau * p_vec(2) * p_vec(0) / mom3 ;
+        p.getH()(2, momindex + 1) = - tau * p_vec(2) * p_vec(1) / mom3 ;
+
+    } else if (2 == dim) {
+
+        // NOTE THAT THESE ARE DIFFERENT IN 2d
+        p.getH()(0, momindex)     = tau * (p_vec(1) * p_vec(1)) / mom3 ;
+        p.getH()(1, momindex + 1) = tau * (p_vec(0) * p_vec(0)) / mom3 ;
+
+        //offdiagonal momentum
+        p.getH()(0, momindex + 1) = - tau * p_vec(0) * p_vec(1) / mom3 ;
+        p.getH()(1, momindex + 0) = - tau * p_vec(1) * p_vec(0) / mom3 ;
+    } else {
+        std::cerr << ("Dimension of Geometric constraint is not 2 or 3. This will crash many things. You should feel bad.") << std::endl;
+    }
+
+    for (int row = 0; row < dim; ++row) {
+        double posxmother = x_m(row);
+        double posx       = x_vec(row);
+        double momx       = p_vec(row);
+
+        /** the direction of the momentum is very well known from the kinematic constraints
+         *  that is why we do not extract the distance as a vector here
+         * */
+        p.getResiduals()(row) = posxmother + tau * momx / mom - posx ;
+        p.getH()(row, posindexmother + row) = 1;
+        p.getH()(row, posindex + row) = -1;
+        p.getH()(row, tauindex) = momx / mom;
+    }
+
+    return ErrCode(ErrCode::Status::success);
 }

@@ -38,7 +38,7 @@ namespace sct::ana {
                 // klong,
                 // conversion,
                 kinematic,
-                // geometric,
+                geometric,
                 mass
                 // massEnergy,
                 // merged,
