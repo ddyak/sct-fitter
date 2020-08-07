@@ -11,7 +11,8 @@ DummyParticle::DummyParticle(ParticlePtr particle, const ParticleBase* mother, c
     ParticleBase(particle, mother, config)
 {
     m_covariance.setZero();
-    m_covariance.diagonal() << 9e-6, 9e-6, 25e-6; // GeV^2
+    //m_covariance.diagonal() << 9e-6, 9e-6, 25e-6; // GeV^2
+    m_covariance = particle->onlyMomentumErrorMatrix();
     // todo: add flags from config
     // todo: read covariance from POD field
 }

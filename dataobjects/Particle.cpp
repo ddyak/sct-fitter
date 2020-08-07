@@ -71,6 +71,11 @@ Particle::Particle(const vector<ParticlePtr>& daughters, int pdgCode) :
     }
 }
 
+Particle::Particle(int pdgCode, const ThreeVector& momentum, const Eigen::Matrix<double, 3, 3>& momCovariance):
+    m_pdgCode(pdgCode), m_p(FourVector::fromPMass(momentum, pdgMass())) {
+        m_errMatrix.topLeftCorner<3, 3>() = momCovariance;
+}
+
 int Particle::mdstIndex() const {
     if (m_mdstAssociated.size() != 1) return 0;
     return *m_mdstAssociated.cbegin();
@@ -111,6 +116,10 @@ const ErrMatrix& Particle::momentumVertexErrorMatrix() const {
 
 MomentumErrMatrix Particle::momentumErrorMatrix() const {
     return m_errMatrix.topLeftCorner<c_DimMomentum, c_DimMomentum>();
+}
+
+Eigen::Matrix<double, 3, 3> Particle::onlyMomentumErrorMatrix() const {
+    return m_errMatrix.topLeftCorner<3, 3>();
 }
 
 PositionErrMatrix Particle::vertexErrorMatrix() const {

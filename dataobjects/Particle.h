@@ -73,8 +73,12 @@ class Particle : public std::enable_shared_from_this<Particle> {
     Particle(const ThreeVector& momentum, ftype mass, int pdgCode, EParticleType particleType=c_Undefined);
     /** All other private members are set to their default values (0). */
     Particle(FourVector momentum, int pdgCode, EParticleType particleType=c_Undefined);
+
+    /** Constructor for cartesian particles. */
+    Particle(int pdgCode, const ThreeVector& momentum, const Eigen::Matrix<double, 3, 3>& momCovariance);
     /** Constructor for composite particles. */
     Particle(const std::vector<ParticlePtr>& daughters, int pdgCode);
+    
     /** Constructor from MC Particle of podio tree */
     // Particle(const sct::MCParticle &mcparticle);
     /** Constructor from MC Particle of podio tree  */
@@ -130,6 +134,8 @@ class Particle : public std::enable_shared_from_this<Particle> {
     const ErrMatrix& momentumVertexErrorMatrix() const;
     /** 4x4 momentum error matrix (order: px,py,pz,E) */
     MomentumErrMatrix momentumErrorMatrix() const;
+    /** 3x3 momentum error matrix (order: px,py,pz,E) */
+    Eigen::Matrix<double, 3, 3> onlyMomentumErrorMatrix() const;
     /** 3x3 position error matrix (order: x,y,z) */
     PositionErrMatrix vertexErrorMatrix() const;
     size_t nDaughters(void) const;

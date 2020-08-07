@@ -9,7 +9,7 @@
 #include "treefitter/include/FitManager.h"
 
 
-sct::ana::ParticlePtr createParticle(Particle* part, std::map<sct::ana::ParticlePtr, Particle*>& particle2pod) {
+sct::ana::ParticlePtr createParticle(POD::Particle* part, std::map<sct::ana::ParticlePtr, POD::Particle*>& particle2pod) {
     if (part->daughters_size > 0) {
         std::vector<sct::ana::ParticlePtr> daughters;
         for (int i = 0; i < part->daughters_size; ++i) {
@@ -21,7 +21,13 @@ sct::ana::ParticlePtr createParticle(Particle* part, std::map<sct::ana::Particle
         return particle;
     } else {
         auto momentum = sct::kine::ThreeVector<double>{part->momentum[0], part->momentum[1], part->momentum[2]};
-        auto particle = std::make_shared<sct::ana::Particle>(momentum, 0.139, part->pdg);
+        auto covariance = Eigen::Matrix<double, 3, 3>{};
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                covariance(i, j) = part->covariance[i][j]; 
+            }
+        }
+        auto particle = std::make_shared<sct::ana::Particle>(part->pdg, momentum, covariance); // FIX IT RIGHT NOW!!!
        particle2pod[particle] = part; // for pod
         return particle;
     }
@@ -29,20 +35,21 @@ sct::ana::ParticlePtr createParticle(Particle* part, std::map<sct::ana::Particle
 
 extern "C" {
 
-Particle* Particle_from_daughters(int pdg, int daughters_size, Particle** daughters) { 
-    return new Particle(pdg, daughters_size, daughters);
+POD::Particle* Particle_from_daughters(int pdg, int daughters_size, POD::Particle** daughters) { 
+    return new POD::Particle(pdg, daughters_size, daughters);
 }
 
-Particle* Particle_from_momentum(int pdg, double momentum[3]) { 
-    return new Particle(pdg, momentum); 
+POD::Particle* Particle_from_momentum(int pdg, double momentum[3], double covariance[3][3]) { 
+    return new POD::Particle(pdg, momentum, covariance); 
 }
 
-double fit(Particle* part) {
-    std::map<sct::ana::ParticlePtr, Particle*> particle2pod;
+double fit(POD::Particle* part) {
+    std::map<sct::ana::ParticlePtr, POD::Particle*> particle2pod;
     sct::ana::ParticlePtr particle = createParticle(part, particle2pod);
     sct::ana::FitManager fitmanager(particle, {});
     fitmanager.fit();
     for (auto& [particle, pod]: particle2pod) {
+        // update Python pod particles
         pod->momentum[0] = particle->momentum()[0];
         pod->momentum[1] = particle->momentum()[1];
         pod->momentum[2] = particle->momentum()[2];
