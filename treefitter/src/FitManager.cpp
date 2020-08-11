@@ -6,6 +6,7 @@
 #include "ParticleBase.h"
 
 using namespace sct::ana;
+using namespace sct;
 
 
 FitManager::FitManager(ParticlePtr particle, const ConstraintConfiguration& config):
@@ -109,4 +110,19 @@ void FitManager::updateCand(const ParticleBase& pb,
     //     setExtraInfo(&cand, std::string("lifeTime"), std::get<0>(life));
     //     setExtraInfo(&cand, std::string("lifeTimeErr"), std::get<1>(life));
     // }
+}
+
+FourVector FitManager::getMomentum(ParticlePtr particle) const {
+    FourVector momentum;
+    auto pb = m_decaychain->locate(particle);
+    if (pb->hasEnergy()) {
+        auto momIdx = pb->momIndex();
+        momentum = m_fitparams->getStateVector().segment(momIdx, 4);
+    } else {
+        double mass = pb->pdgMass();
+        auto momIdx = pb->momIndex();
+        ThreeVector mom3 = m_fitparams->getStateVector().segment(momIdx, 3);
+        momentum = FourVector::fromPMass(mom3, mass);
+    }
+    return momentum;
 }

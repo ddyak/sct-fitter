@@ -28,6 +28,7 @@ public:
     /** getter for chi2 of the newton iteration */
     double chiSquare() const { return m_chiSquare; }
 
+
 private:
     /** head of tree */
     ParticlePtr m_particle;
@@ -40,6 +41,10 @@ private:
 
     FitParams* m_fitparams;
     DecayChain* m_decaychain;
+
+public:
+    /** getter momentum by particle */
+    FourVector getMomentum(ParticlePtr particle) const;
 };
 
 }

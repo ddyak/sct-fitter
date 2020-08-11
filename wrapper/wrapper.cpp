@@ -7,54 +7,52 @@
 
 #include "treefitter/include/ConstraintConfiguration.h"
 #include "treefitter/include/FitManager.h"
+#include <iostream>
 
-
-sct::ana::ParticlePtr createParticle(POD::Particle* part, std::map<sct::ana::ParticlePtr, POD::Particle*>& particle2pod) {
-    if (part->daughters_size > 0) {
-        std::vector<sct::ana::ParticlePtr> daughters;
-        for (int i = 0; i < part->daughters_size; ++i) {
-            auto daughter = createParticle(part->daughters[i], particle2pod);
-            daughters.push_back(daughter);
-        }
-        auto particle = std::make_shared<sct::ana::Particle>(daughters, part->pdg);
-       particle2pod[particle] = part; // for pod
-        return particle;
-    } else {
-        auto momentum = sct::kine::ThreeVector<double>{part->momentum[0], part->momentum[1], part->momentum[2]};
-        auto covariance = Eigen::Matrix<double, 3, 3>{};
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                covariance(i, j) = part->covariance[i][j]; 
-            }
-        }
-        auto particle = std::make_shared<sct::ana::Particle>(part->pdg, momentum, covariance); // FIX IT RIGHT NOW!!!
-       particle2pod[particle] = part; // for pod
-        return particle;
-    }
-}
 
 extern "C" {
 
-POD::Particle* Particle_from_daughters(int pdg, int daughters_size, POD::Particle** daughters) { 
-    return new POD::Particle(pdg, daughters_size, daughters);
+sct::ana::FitManager* create_manager(sct::ana::Particle* part) {
+    sct::ana::ParticlePtr p = sct::ana::ParticlePtr(part, [](sct::ana::Particle*){});
+    return new sct::ana::FitManager(p, {});
 }
 
-POD::Particle* Particle_from_momentum(int pdg, double momentum[3], double covariance[3][3]) { 
-    return new POD::Particle(pdg, momentum, covariance); 
+void manager_fit(sct::ana::FitManager* fitmanager) {
+    fitmanager->fit();
 }
 
-double fit(POD::Particle* part) {
-    std::map<sct::ana::ParticlePtr, POD::Particle*> particle2pod;
-    sct::ana::ParticlePtr particle = createParticle(part, particle2pod);
-    sct::ana::FitManager fitmanager(particle, {});
-    fitmanager.fit();
-    for (auto& [particle, pod]: particle2pod) {
-        // update Python pod particles
-        pod->momentum[0] = particle->momentum()[0];
-        pod->momentum[1] = particle->momentum()[1];
-        pod->momentum[2] = particle->momentum()[2];
-    }
-    return fitmanager.chiSquare();
+double* manager_momentum(sct::ana::FitManager* fitmanager, sct::ana::Particle* part) {
+    sct::ana::ParticlePtr p = sct::ana::ParticlePtr(part, [](sct::ana::Particle*){});
+    sct::FourVector fv = fitmanager->getMomentum(p);
+    double* mom = new double[4];
+    for (int i = 0; i < 4; ++i) mom[i] = fv(i);
+    return mom;
+}
+
+double manager_chi(sct::ana::FitManager* fitmanager) {
+    return fitmanager->chiSquare();
+}
+
+sct::ana::Particle* particle_from_momentum(int pdgCode, double momentum[3], double covariance[3][3]) {
+    sct::ThreeVector mom; mom << momentum[0], momentum[1], momentum[2];
+    Eigen::Matrix<double, 3, 3> cov; 
+    for (int i = 0; i < 3; ++i) 
+        for (int j = 0; j < 3; ++j)
+            cov(i, j) = covariance[i][j];
+
+    return new sct::ana::Particle(pdgCode, mom, cov);
+}
+
+sct::ana::Particle* particle_from_daughters(int pdgCode, int daughters_size, sct::ana::Particle** daughters) {
+    std::vector<sct::ana::ParticlePtr> daughters_vector;
+    for (int i = 0; i < daughters_size; ++i)
+        daughters_vector.push_back(sct::ana::ParticlePtr(daughters[i], [](sct::ana::Particle* part){}));
+
+    return new sct::ana::Particle(daughters_vector, pdgCode);
+}
+
+const double* get_momentum(sct::ana::Particle* particle) {
+    return particle->fourMomentum().data();
 }
 
 }
