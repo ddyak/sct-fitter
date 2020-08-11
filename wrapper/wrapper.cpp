@@ -3,7 +3,6 @@
 #include <map>
 
 #include "dataobjects/Particle.h"
-#include "PODs/Particle.h"
 
 #include "treefitter/include/ConstraintConfiguration.h"
 #include "treefitter/include/FitManager.h"
