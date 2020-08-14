@@ -1,4 +1,3 @@
-
 import ctypes
 lib = ctypes.cdll.LoadLibrary('../build/libfit_lib.so')
 

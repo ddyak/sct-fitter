@@ -10,9 +10,6 @@ using namespace sct::ana;
 DummyParticle::DummyParticle(ParticlePtr particle, const ParticleBase* mother, const ConstraintConfiguration& config):
     ParticleBase(particle, mother, config)
 {
-    m_covariance.setZero();
-    //m_covariance.diagonal() << 9e-6, 9e-6, 25e-6; // GeV^2
-    m_covariance = particle->onlyMomentumErrorMatrix();
     // todo: add flags from config
     // todo: read covariance from POD field
 }
@@ -41,7 +38,7 @@ ErrCode DummyParticle::projectMeasurmentConstraint(const FitParams& fitparams, P
         p.getH()(imom, momindex + imom) = 1;
     }
 
-    p.getV().triangularView<Eigen::Lower>() = m_covariance.triangularView<Eigen::Lower>();
+    p.getV().triangularView<Eigen::Lower>() = particle()->onlyMomentumErrorMatrix().triangularView<Eigen::Lower>();
 
     return ErrCode(ErrCode::Status::success);
 }

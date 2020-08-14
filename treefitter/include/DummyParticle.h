@@ -32,6 +32,16 @@ public:
     virtual ErrCode projectConstraint(const Constraint::Type type, 
                                     const FitParams& fitparams,
                                     Projection& p) const override;
+
+    /** init particle coordinate from two daughter momentum as its intersection */
+    static ThreeVector coordinate_from_momenta(DummyParticle lhs, DummyParticle rhs) {
+        // implement: https://en.wikipedia.org/wiki/Skew_lines#Distance
+        // need cooridinates
+        //auto p1 = lhs.m_momentum;
+        //auto p2 = lhs.m_momentum;
+        return {};
+    }
+
 private:
     /** project measurment constraint */
     ErrCode projectMeasurmentConstraint(const FitParams& fitparams, Projection& p) const;
@@ -43,12 +53,6 @@ protected:
 
 private:
     bool m_massconstraint = true;
-
-    /** only lower triangle filled! */
-    Eigen::Matrix<double, 3, 3> m_covariance;
-
-    /** only lower triangle filled! */
-    Eigen::Matrix<double, 1, 3> m_momentum;
 };
 
 
